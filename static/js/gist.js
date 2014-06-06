@@ -144,12 +144,13 @@ Gist.prototype.render = function() {
 
 
 Gist.prototype.shouldShow = function() {
-    return (this.data.tags.indexOf("unpublished") == -1 &&
-            this.data.tags.indexOf("crumbs") != -1);
+    return this.data.tags.indexOf("crumbs") != -1;
 };
 
 Gist.prototype.shouldIndex = function() {
-    return this.shouldShow() && this.data.tags.indexOf("no-index") == -1;
+    return (this.shouldShow() &&
+            this.data.tags.indexOf("draft") == -1 &&
+            this.data.tags.indexOf("no-index") == -1);
 };
 
 Gist.prototype.parseDescription = function() {
