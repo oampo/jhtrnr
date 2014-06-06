@@ -1,0 +1,98 @@
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    display: table;
+}
+
+html, button, input, select, textarea,
+.pure-g [class *= "pure-u"] {
+    font-family: 'Gandhi Serif', serif;
+    font-size: 20px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+}
+
+a {
+    color: #000;
+    text-decoration: none;
+    transition: 0.5s;
+}
+
+a:hover, a:active, a:focus {
+    color: #CC0000;
+    outline: none;
+}
+
+a[disabled] {
+    pointer-events: none;
+    color: #CCC;
+}
+
+nav#main-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100px;
+    font-size: 40px;
+    background-color: #FFF;
+}
+
+nav#main-nav ul {
+    padding: 0;
+    text-align: center;
+}
+
+div#main, div#vertical {
+    width: 100%;
+    height: 100%;
+}
+
+div.vertical {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+div.padded {
+    padding: 0 100px;
+    box-sizing: border-box;
+}
+
+div.padded.limited {
+    max-width: 800px;
+    margin: auto;
+}
+
+.center {
+    text-align: center;
+}
+
+@media (max-width: 568px) {
+    div.padded {
+        padding: 0 20px;
+    }
+
+    nav#main-nav {
+        position: absolute;
+        width: 100%;
+    }
+
+    div#main {
+        padding-top: 2.2em;
+        box-sizing: border-box;
+    }
+
+    nav#main-nav ul {
+        margin: 0;
+    }
+
+    nav#main-nav li {
+        display: inline-block;
+    }
+}
+
+
