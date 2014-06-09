@@ -180,7 +180,7 @@ Gist.prototype.parseDescription = function() {
 };
 
 Gist.prototype.generatePath = function() {
-    this.data.path = "/pages/" + Util.slugify(this.data.title) + "/" + this.data.id;
+    this.data.path = "/work/" + Util.slugify(this.data.title) + "/" + this.data.id;
 };
 
 Gist.prototype.addFilenames = function() {
