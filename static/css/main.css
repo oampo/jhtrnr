@@ -3,10 +3,6 @@ html, body {
     height: 100%;
 }
 
-body {
-    display: table;
-}
-
 html, button, input, select, textarea,
 .pure-g [class *= "pure-u"] {
     font-family: 'Gandhi Serif', serif;
@@ -15,6 +11,11 @@ html, button, input, select, textarea,
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
 }
 
 a {
@@ -45,6 +46,10 @@ nav#main-nav {
 nav#main-nav ul {
     padding: 0;
     text-align: center;
+}
+
+div#main {
+    display: table;
 }
 
 div#main, div#vertical {
