@@ -54,7 +54,7 @@ Main.prototype.move = function(shouldFadeOut) {
     this.gist = gist;
 
     var deferreds = [];
-    var load = this.gist.load();
+    var load = this.gist.load(this.routeIsLocal());
     deferreds.push(load);
 
     if (shouldFadeOut) {
@@ -117,9 +117,14 @@ Main.prototype.routeToGist = function() {
     }
     else {
         var splitPath = path.split("/");
-        gist = this.gistDict[splitPath[splitPath.length - 1]];
+        gist = this.gistDict[splitPath[3]];
     }
     return gist;
+};
+
+Main.prototype.routeIsLocal = function() {
+    var splitPath = document.location.pathname.split("/");
+    return splitPath[splitPath.length - 1] == "local";
 };
 
 Main.prototype.getGists = function(callback, page, per_page) {
@@ -164,8 +169,8 @@ Main.prototype.storeGists = function(callback, page, per_page, gists) {
 
 Main.prototype.onGetGists = function() {
     var gist = this.gistDict[Main.ALIASES_ID];
-    var file = gist.findFilesWithLanguage("JSON")[0];
-    var deferred = gist.getFile(file);
+    var files = gist.findFilesWithLanguage("JSON");
+    var deferred = gist.getFiles(files);
     deferred.done(this.onGetAliasFile.bind(this));
 };
 

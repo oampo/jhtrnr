@@ -13,14 +13,25 @@ var Gist = function(app, data) {
 Gist.prototype.generateMetadata = function() {
     this.parseDescription();
     this.generatePath();
+    this.addFilenames();
 };
 
-Gist.prototype.load = function() {
+Gist.prototype.load = function(local) {
+    local = local || false;
     var files = [];
     files = files.concat(this.contentFiles);
     files = files.concat(this.templateFiles);
     files = files.concat(this.javascriptFiles);
     files = files.concat(this.cssFiles);
+
+    if (local) {
+        for (var i=0; i<files.length; i++) {
+            var file = files[i];
+            file.local = true;
+            file.raw_url = "/content/" + this.data.title + "/" + file.name;
+        }
+    }
+
     return this.getFiles(files);
 };
 
@@ -48,8 +59,11 @@ Gist.prototype.getDeferred = function(file) {
         return null;
     }
 
-    if (!("content" in file) || file.truncated) {
-        var url = Util.cdnURL(file.raw_url);
+    if (!("content" in file) || file.truncated || file.local) {
+        var url = file.raw_url;
+        if (!file.local) {
+            url = Util.cdnURL(url);
+        }
         var ajax = $.ajax({
             url: url
         });
@@ -77,6 +91,7 @@ Gist.prototype.setContent = function() {
         }
         file.content = content;
         file.truncated = false;
+        file.local = false;
     }
 };
 
@@ -164,9 +179,16 @@ Gist.prototype.parseDescription = function() {
     this.data.tags = tags;
 };
 
-Gist.prototype.generatePath = function(gist) {
+Gist.prototype.generatePath = function() {
     this.data.path = "/pages/" + Util.slugify(this.data.title) + "/" + this.data.id;
 };
+
+Gist.prototype.addFilenames = function() {
+    for (var fileName in this.data.files) {
+        this.data.files[fileName].name = fileName;
+    }
+};
+
 
 Gist.prototype.findFilesWithLanguage = function(languages) {
     var files = [];
