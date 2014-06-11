@@ -52,9 +52,16 @@ Main.prototype.move = function(shouldFadeOut) {
     }
 
     this.gist = gist;
+    this.load();
+};
+
+Main.prototype.load = function(shouldFadeOut) {
+    if (shouldFadeOut == null) {
+        shouldFadeOut = true;
+    }
 
     var deferreds = [];
-    var load = this.gist.load(this.routeIsLocal());
+    var load = this.gist.load();
     deferreds.push(load);
 
     if (shouldFadeOut) {
@@ -79,7 +86,7 @@ Main.prototype.onMoveOutDone = function(shouldFadeOut) {
         this.onFadeOutEnd(this);
     }
 
-    $("title").text(this.gist.data.title);
+    $("title").text(this.gist.title);
     this.clearListeners();
     $("style.gist-style").remove();
     this.gist.insertJavascript();
@@ -122,11 +129,6 @@ Main.prototype.routeToGist = function() {
     return gist;
 };
 
-Main.prototype.routeIsLocal = function() {
-    var splitPath = document.location.pathname.split("/");
-    return splitPath[splitPath.length - 1] == "local";
-};
-
 Main.prototype.getGists = function(callback, page, per_page) {
     page = page || 1;
     per_page = per_page || 100;
@@ -146,15 +148,15 @@ Main.prototype.storeGists = function(callback, page, per_page, gists) {
             continue;
         }
 
-        this.gistDict[gist.data.id] = gist;
-        gist.data.index = null;
+        this.gistDict[gist.id] = gist;
+        gist.index = null;
 
         if (!gist.shouldIndex()) {
             continue;
         }
 
         this.gistList.push(gist);
-        gist.data.index = this.gistList.length - 1;
+        gist.index = this.gistList.length - 1;
     }
 
     if (gists.length == 0 || gists.length < per_page) {

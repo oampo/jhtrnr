@@ -1,6 +1,8 @@
 var Gist = function(app, data) {
     this.app = app;
-    this.data = data;
+    for (var item in data) {
+        this[item] = data[item];
+    }
     this.content = null;
     this.generateMetadata();
 
@@ -17,21 +19,11 @@ Gist.prototype.generateMetadata = function() {
 };
 
 Gist.prototype.load = function(local) {
-    local = local || false;
     var files = [];
     files = files.concat(this.contentFiles);
     files = files.concat(this.templateFiles);
     files = files.concat(this.javascriptFiles);
     files = files.concat(this.cssFiles);
-
-    if (local) {
-        for (var i=0; i<files.length; i++) {
-            var file = files[i];
-            file.local = true;
-            file.raw_url = "/content/" + this.data.title + "/" + file.name;
-        }
-    }
-
     return this.getFiles(files);
 };
 
@@ -120,6 +112,9 @@ Gist.prototype.compile = function() {
         this.content = template(context);
     }
 
+    this.content = $(this.content);
+    this.updateAssetLinks();
+
     if (this.app.onCompileEnd) {
         this.app.onCompileEnd(this);
     }
@@ -133,8 +128,8 @@ Gist.prototype.render = function() {
     this.app.mainDiv.empty().html(this.content);
 
     if (this.hasNext()) {
-        var next = this.app.gistList[this.data.index - 1];
-        this.app.nextLink.attr("href", next.data.path);
+        var next = this.app.gistList[this.index - 1];
+        this.app.nextLink.attr("href", next.path);
         this.app.nextLink.removeAttr("disabled");
     }
     else {
@@ -143,8 +138,8 @@ Gist.prototype.render = function() {
     }
 
     if (this.hasPrev()) {
-        var prev = this.app.gistList[this.data.index + 1];
-        this.app.prevLink.attr("href", prev.data.path);
+        var prev = this.app.gistList[this.index + 1];
+        this.app.prevLink.attr("href", prev.path);
         this.app.prevLink.removeAttr("disabled");
     }
     else {
@@ -159,46 +154,58 @@ Gist.prototype.render = function() {
 
 
 Gist.prototype.shouldShow = function() {
-    return this.data.tags.indexOf("crumbs") != -1;
+    return this.tags.indexOf("crumbs") != -1;
 };
 
 Gist.prototype.shouldIndex = function() {
     return (this.shouldShow() &&
-            this.data.tags.indexOf("draft") == -1 &&
-            this.data.tags.indexOf("no-index") == -1);
+            this.tags.indexOf("draft") == -1 &&
+            this.tags.indexOf("no-index") == -1);
 };
 
 Gist.prototype.parseDescription = function() {
-    var split = this.data.description.split("#");
+    var split = this.description.split("#");
     title = split[0].trim();
     var tags = split.slice(1);
     for (var i=0; i<tags.length; i++) {
         tags[i] = tags[i].trim();
     }
-    this.data.title = title;
-    this.data.tags = tags;
+    this.title = title;
+    this.tags = tags;
 };
 
 Gist.prototype.generatePath = function() {
-    this.data.path = "/work/" + Util.slugify(this.data.title) + "/" + this.data.id;
+    this.path = "/work/" + Util.slugify(this.title) + "/" + this.id;
 };
 
 Gist.prototype.addFilenames = function() {
-    for (var fileName in this.data.files) {
-        this.data.files[fileName].name = fileName;
+    for (var fileName in this.files) {
+        this.files[fileName].name = fileName;
     }
 };
 
 
 Gist.prototype.findFilesWithLanguage = function(languages) {
     var files = [];
-    for (var fileName in this.data.files) {
-        var file = this.data.files[fileName];
+    for (var fileName in this.files) {
+        var file = this.files[fileName];
         if (languages.indexOf(file.language) != -1) {
             files.push(file);
         }
     }
     return files;
+};
+
+Gist.prototype.updateAssetLinks = function() {
+    this.content.find("[src]").each(function(index, element) {
+        element = $(element);
+        var filename = element.attr("src");
+        if (!(filename in this.files)) {
+            return;
+        }
+
+        element.attr("src", Util.cdnURL(this.files[filename].raw_url));
+    }.bind(this));
 };
 
 Gist.prototype.insertJavascript = function() {
@@ -227,12 +234,12 @@ Gist.prototype.insertCSS = function() {
 };
 
 Gist.prototype.hasNext = function() {
-    return this.data.index != null && this.data.index > 0;
+    return this.index != null && this.index > 0;
 };
 
 Gist.prototype.hasPrev = function() {
-    return (this.data.index != null &&
-            this.data.index < this.app.gistList.length - 1);
+    return (this.index != null &&
+            this.index < this.app.gistList.length - 1);
 };
 
 
