@@ -9,7 +9,7 @@ app.debug = True
 
 @app.route("/")
 @app.route("/<path:path>")
-def index(path):
+def index(path=None):
     return send_from_directory(app.root_path, "index.html")
 
 @app.route("/<path>/files")
