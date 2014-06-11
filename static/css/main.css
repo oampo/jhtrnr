@@ -18,6 +18,10 @@ canvas {
     height: 100%;
 }
 
+img, embed, object, video {
+    max-width: 100%;
+}
+
 a {
     color: #000;
     text-decoration: none;
